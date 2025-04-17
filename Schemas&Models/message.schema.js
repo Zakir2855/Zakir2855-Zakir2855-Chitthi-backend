@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const cloudinary = require("cloudinary").v2;
 
 const mongoose = require("mongoose");
