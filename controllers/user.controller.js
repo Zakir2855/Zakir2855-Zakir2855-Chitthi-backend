@@ -47,19 +47,34 @@ async function SignUp(req, res) {
   }
 }
 //adding profile images
-async function UploadAvatar(req, response) {
-  let userDetails = await User.findById(req.params.id);
-  if (!userDetails) {
-    return response
-      .status(404)
-      .json({ message: "can't find user or you are not logged in." });
+async function UploadAvatar(req, res) {
+  try {
+    const userDetails = await User.findById(req.params.id);
+    if (!userDetails) {
+      return res
+        .status(404)
+        .json({ message: "Can't find user or you are not logged in." });
+    }
+
+    
+    userDetails.avatar = req.file.path.replace(/\\/g, "/");
+    await userDetails.save();              
+
+    return res.status(200).json({
+      message: "Avatar successfully uploaded",
+      user_data: {
+        Name:   userDetails.Name,
+        avatar: userDetails.avatar,
+        id:     userDetails._id.toString(),
+        email:  userDetails.email,
+      },
+    });
+  } catch (err) {
+    console.error("Error in UploadAvatar:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  userDetails.avatar = req.file.path.replace(/\\/g, "/"); //here we are replacing \ with / forward slashes as url is preferd in forward slash while windows uses \
-
-  await userDetails.save();
-  response.status(200).json({ message: "avatar succussfully uploaded" });
 }
+
 //login function and assigning token
 async function Login(req, resp) {
   try {
