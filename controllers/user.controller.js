@@ -160,3 +160,11 @@ async function Logout(req, resp) {
 
 //
 module.exports = { SignUp, UploadAvatar, Login, Logout };
+// httpOnly: false,
+//  secure: false,
+//  sameSite: "Lax",
+
+//httpOnly: true, // so only browser can use it, not JS
+//secure: true,   // cookie only sent over HTTPS
+//sameSite: "None", // allows cross-origin cookies
+Chitthi-backend
