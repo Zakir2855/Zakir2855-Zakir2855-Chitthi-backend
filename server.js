@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 
 const { userRouter } = require("./Routers/userRouter");
 const { mssgRouter } = require("./Routers/message.router");
-const { DBconnect } = require("./configs/dg.config");
+const { DBconnect } = require("./configs/db.config");
 const { cloudinaryConfig } = require("./configs/cloudinary");
 
 const PORT = process.env.PORT || 6001;

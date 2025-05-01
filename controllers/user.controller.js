@@ -114,9 +114,9 @@ async function Login(req, resp) {
     resp
       .status(200)
       .cookie("lgntkncof", token, {
-       //lgn tkn    revise about following things
- httpOnly: false,
- secure: false,
+       //lgn tkn    
+ httpOnly: false,//false means can be accessed by js risky
+ secure: false,//cookie can be sent over http and https both
  sameSite: "Lax",
       })
       .json({
@@ -167,4 +167,3 @@ module.exports = { SignUp, UploadAvatar, Login, Logout };
 //httpOnly: true, // so only browser can use it, not JS
 //secure: true,   // cookie only sent over HTTPS
 //sameSite: "None", // allows cross-origin cookies
-Chitthi-backend

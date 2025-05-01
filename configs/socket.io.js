@@ -25,15 +25,16 @@ io.on("connection", (socket) => {
     console.log("UserMap after setup:", userMap);
   });
   //personal message handler
-  socket.on("personalMessage", (toUserId, fromUserId) => {
+  socket.on("personalMessage", (toUserId, fromUserId,mssg) => {
     const recipientSocketId = userMap.get(toUserId);
+console.log(mssg,">>>>>>");
 
     if (recipientSocketId) {
-      io.to(recipientSocketId).emit("personally", fromUserId); // to receiver
+      io.to(recipientSocketId).emit("personally", fromUserId,mssg); 
     }
 
     // Also notify sender so they can refresh messages if needed
-    socket.emit("personally", toUserId);
+    // socket.emit("personally", toUserId);
   });
   //
 
