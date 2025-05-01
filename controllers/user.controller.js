@@ -115,9 +115,9 @@ async function Login(req, resp) {
       .status(200)
       .cookie("lgntkncof", token, {
        //lgn tkn    
- httpOnly: false,//false means can be accessed by js risky
- secure: false,//cookie can be sent over http and https both
- sameSite: "Lax",
+ httpOnly: true,//false means can be accessed by js risky
+ secure: true,//cookie can be sent over http and https both
+ sameSite: "None",
       })
       .json({
         message: "User logged in successfully",
