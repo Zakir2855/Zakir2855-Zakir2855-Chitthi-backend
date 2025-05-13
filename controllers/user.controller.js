@@ -21,13 +21,22 @@ async function SignUp(req, res) {
     }
 
     //
-    const newUser = new User({
-      Name,
-      email,
-      password,
-      profile_picture,
-    });
-    await newUser.save();
+    // const newUser = new User({
+    //   Name,
+    //   email,
+    //   password,
+    //   profile_picture,
+    //   lastOnline: new Date(),
+    // });
+
+    // await newUser.save();
+  const newUser = await User.create({
+  Name,
+  email,
+  password,
+  profile_picture,
+  lastOnline: new Date(),  
+});
     if (newUser) {
       return res
         .status(201)
@@ -56,17 +65,16 @@ async function UploadAvatar(req, res) {
         .json({ message: "Can't find user or you are not logged in." });
     }
 
-    
     userDetails.avatar = req.file.path.replace(/\\/g, "/");
-    await userDetails.save();              
+    await userDetails.save();
 
     return res.status(200).json({
       message: "Avatar successfully uploaded",
       user_data: {
-        Name:   userDetails.Name,
+        Name: userDetails.Name,
         avatar: userDetails.avatar,
-        id:     userDetails._id.toString(),
-        email:  userDetails.email,
+        id: userDetails._id.toString(),
+        email: userDetails.email,
       },
     });
   } catch (err) {
@@ -90,7 +98,9 @@ async function Login(req, resp) {
     }
 
     if (user.isSignedIn) {
-      return resp.status(409).json({ message: "User already logged in on a device" });
+      return resp
+        .status(409)
+        .json({ message: "User already logged in on a device" });
     }
 
     const isVerified = await bcrypt.compare(password, user.password);
@@ -105,6 +115,7 @@ async function Login(req, resp) {
     );
 
     user.isSignedIn = true;
+    user.lastOnline = new Date();
     await user.save();
 
     if (process.env.NODE_ENV !== "production") {
@@ -114,10 +125,10 @@ async function Login(req, resp) {
     resp
       .status(200)
       .cookie("lgntkncof", token, {
-       //lgn tkn    
- httpOnly: true,//false means can be accessed by js risky
- secure: true,//cookie can be sent over http and https both
- sameSite: "None",
+        //lgn tkn
+        httpOnly: true, //false means can be accessed by js risky
+        secure: true, //cookie can be sent over http and https both
+        sameSite: "None",
       })
       .json({
         message: "User logged in successfully",
@@ -134,8 +145,6 @@ async function Login(req, resp) {
   }
 }
 
-
- 
 //logout
 async function Logout(req, resp) {
   const userId = req.params.id;
@@ -144,7 +153,10 @@ async function Logout(req, resp) {
   }
 
   try {
-    await User.findByIdAndUpdate(userId, { isSignedIn: false });
+    await User.findByIdAndUpdate(userId, {
+      isSignedIn: false,
+      lastOnline: new Date(),
+    });
 
     resp
       .cookie("lgntkncof", "", {

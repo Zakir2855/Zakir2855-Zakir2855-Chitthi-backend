@@ -1,13 +1,16 @@
 const Server = require("socket.io").Server;
 const http = require("http");
 const express = require("express");
-const { Socket } = require("socket.io");
 const { User } = require("../Schemas&Models/userSchema");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173","https://chitthi-nu.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://chitthi-nu.vercel.app",
+      "http://localhost:5174",
+    ],
   },
 });
 
@@ -22,18 +25,18 @@ io.on("connection", (socket) => {
     userMap.set(userId, socket.id);
     let onlineUsers = Object.fromEntries(userMap);
     io.emit("online", onlineUsers);
-    console.log("UserMap after setup:", userMap);
+    console.log("UserMap after setup of online users", userMap);
   });
   //personal message handler
-  socket.on("personalMessage", (toUserId, fromUserId,mssg) => {
+  socket.on("personalMessage", (toUserId, fromUserId, mssg) => {
     const recipientSocketId = userMap.get(toUserId);
-console.log(mssg,">>>>>>");
+    // console.log(mssg, ">>>>>>");
 
     if (recipientSocketId) {
-      io.to(recipientSocketId).emit("personally", fromUserId,mssg); 
+      io.to(recipientSocketId).emit("personally", fromUserId, mssg);
     }
 
-    // Also notify sender so they can refresh messages if needed
+    // if to notify sender
     // socket.emit("personally", toUserId);
   });
   //
@@ -42,7 +45,7 @@ console.log(mssg,">>>>>>");
     // Clean up userMap
     for (const [user, id] of userMap) {
       if (id === socket.id) {
-        await User.findByIdAndUpdate(user, { isSignedIn: false });
+        await User.findByIdAndUpdate(user, { isSignedIn: false, lastOnline:new Date()});
         userMap.delete(user);
         break;
       }

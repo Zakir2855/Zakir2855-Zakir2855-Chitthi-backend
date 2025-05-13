@@ -34,6 +34,10 @@ let userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    lastOnline: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
@@ -41,21 +45,20 @@ userSchema.pre("save", async function (next) {
   try {
     if (this.isModified("password")) {
       this.password = await bcrypt.hash(this.password, 10);
+    }
 
-      next();
-    }
-    if (this.isModified("avatar")) {
-      let result = await cloudinary.uploader.upload(this.avatar);
+    if (this.isModified("avatar") && this.avatar) {
+      const result = await cloudinary.uploader.upload(this.avatar);
       this.avatar = result.secure_url;
-      next();
-    } else {
-      next();
     }
+
+    next();
   } catch (err) {
-    console.log(err, "error in password encryption");
-    return;
+    console.log(err, "Error in pre-save hook");
+    next(err);
   }
 });
+
 let User = mongoose.model("users", userSchema);
 
 module.exports = { User };

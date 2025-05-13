@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 6001;
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173","https://chitthi-nu.vercel.app"],
+    origin: ["http://localhost:5173", "https://chitthi-nu.vercel.app"],
     credentials: true,
   })
 );
@@ -34,12 +34,16 @@ app.use("/user", userRouter);
 app.use("/mssg", mssgRouter);
 
 // Server listen
-server.listen(PORT, (err) => {
-  if (err) {
-    console.log(err, "in listening");
-  } else {
-    DBconnect();
-    cloudinaryConfig();
-    console.log(`Server is listening at PORT: ${PORT}`);
-  }
-});
+DBconnect()
+  .then((res) => {
+    console.log("database is conneted");
+    server.listen(PORT, (err) => {
+      if (err) {
+        console.log(err, "in listening");
+      } else {
+        cloudinaryConfig();
+        console.log(`Server is listening at PORT: ${PORT}`);
+      }
+    });
+  })
+  .catch((err) => console.log(err, "in connect database"));
